@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body style="margin:0;padding:0">
+<!-- project-planning artifact template.
+     Copy this file verbatim. Only edit the parts marked with FILL comments:
+     the <title> (always "Tech Spec - <project>"), the artifact-meta values, the
+     doc-title, the project summary, the Overview, MILESTONES + TASKS data, the
+     task cards, and the Decisions/Technical Details entries. Do NOT rewrite the
+     CSS or the scripts — they are known-good (tabs, cross-tab links, theme
+     toggle, graph layout, the dependency-wave table, the Done and Ready marks
+     on both, the In progress / In review highlight, a Not started chip shown as Ready or Not ready, the Overview's Execution
+     progress and milestone rows, and every entry's "Used by"/"Blocks"/"Affects" line, all generated from the
+     cards and TASKS — never hand-author them). Tab order is fixed: Overview,
+     Tasks, Decisions, Technical Details. -->
+<title>Tech Spec - Órdenes RX</title>
+<!-- artifact-meta favicon=🦷 template=2 base=main -->
+<style>
+/* Gruvbox light: bg0 fbf1c7 · fg 3c3836 · faded accents */
+:root{
+  --bg:#fbf1c7; --surface:#f9f5d7; --surface2:#ebdbb2; --ink:#3c3836; --ink-mid:#504945;
+  --muted:#7c6f64; --rule:#d5c4a1; --edge:#bdae93;
+  --accent:#427b58; --accent-dim:#dee3c4; --unblocks:#076678;
+  --warn:#af3a03; --warn-bg:#f0dfbd;
+  --gb-red:#9d0006; --gb-green:#79740e; --gb-yellow:#b57614; --gb-blue:#076678;
+  --gb-purple:#8f3f71; --gb-aqua:#427b58; --gb-orange:#af3a03; --gb-gray:#928374; --gb-blue2:#458588;
+}
+/* Gruvbox dark: bg0 282828 · fg ebdbb2 · bright accents */
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#282828; --surface:#3c3836; --surface2:#504945; --ink:#ebdbb2; --ink-mid:#d5c4a1;
+    --muted:#a89984; --rule:#504945; --edge:#665c54;
+    --accent:#8ec07c; --accent-dim:#484c40; --unblocks:#83a598;
+    --warn:#fe8019; --warn-bg:#534133;
+    --gb-red:#fb4934; --gb-green:#b8bb26; --gb-yellow:#fabd2f; --gb-blue:#83a598;
+    --gb-purple:#d3869b; --gb-aqua:#8ec07c; --gb-orange:#fe8019; --gb-gray:#928374; --gb-blue2:#458588; }
+}
+:root[data-theme="dark"]{ --bg:#282828; --surface:#3c3836; --surface2:#504945; --ink:#ebdbb2; --ink-mid:#d5c4a1;
+  --muted:#a89984; --rule:#504945; --edge:#665c54;
+  --accent:#8ec07c; --accent-dim:#484c40; --unblocks:#83a598;
+  --warn:#fe8019; --warn-bg:#534133;
+  --gb-red:#fb4934; --gb-green:#b8bb26; --gb-yellow:#fabd2f; --gb-blue:#83a598;
+  --gb-purple:#d3869b; --gb-aqua:#8ec07c; --gb-orange:#fe8019; --gb-gray:#928374; --gb-blue2:#458588; }
+:root[data-theme="light"]{ --bg:#fbf1c7; --surface:#f9f5d7; --surface2:#ebdbb2; --ink:#3c3836; --ink-mid:#504945;
+  --muted:#7c6f64; --rule:#d5c4a1; --edge:#bdae93;
+  --accent:#427b58; --accent-dim:#dee3c4; --unblocks:#076678;
+  --warn:#af3a03; --warn-bg:#f0dfbd;
+  --gb-red:#9d0006; --gb-green:#79740e; --gb-yellow:#b57614; --gb-blue:#076678;
+  --gb-purple:#8f3f71; --gb-aqua:#427b58; --gb-orange:#af3a03; --gb-gray:#928374; --gb-blue2:#458588; }
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85em;background:var(--surface2);padding:.08em .3em;border-radius:3px}
+table{border-collapse:collapse;width:100%;margin:.6rem 0;font-size:.88rem}
+th,td{border:1px solid var(--rule);padding:.4rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-weight:600}
+.table-wrap{overflow-x:auto}
+ul,ol{padding-left:1.3rem;margin:.4rem 0}
+li{margin:.18rem 0}
+p{margin:.5rem 0;max-width:76ch}
+
+.topbar{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--rule);padding:0 1.5rem}
+.topbar-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.6rem 0}
+.doc-title{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-right:auto}
+.tab-btn{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;font-weight:600;padding:.35rem .9rem;border-radius:4px;color:var(--muted);background:none;border:1px solid transparent;cursor:pointer}
+.tab-btn:hover{background:var(--surface2);color:var(--ink)}
+.tab-btn.active{background:var(--accent-dim);color:var(--accent);border-color:var(--accent)}
+.theme-toggle{font-family:ui-monospace,Menlo,monospace;font-size:.75rem;color:var(--muted);padding:.3rem .6rem;border-radius:4px;border:1px solid var(--rule);background:none;cursor:pointer}
+.theme-toggle:hover{color:var(--ink)}
+
+.main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.project-summary{border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:.8rem 1rem;margin-bottom:1.6rem;font-size:.92rem;color:var(--ink-mid);max-width:78ch}
+.panel{display:none}
+.panel.active{display:block}
+.panel h2{font-size:1.08rem;margin:2rem 0 .6rem;padding-bottom:.3rem;border-bottom:2px solid var(--rule)}
+.panel>h2:first-child{margin-top:0}
+.lede{color:var(--ink-mid);max-width:72ch;font-size:.95rem;margin:0 0 1rem}
+.scope,.milestones{list-style:none;padding-left:0;max-width:78ch}
+.scope li,.milestones li{margin:.3rem 0}
+.scope li{padding-left:3.9rem;text-indent:-3.9rem}
+.scope-tag{display:inline-block;text-indent:0;min-width:3.4rem;font-family:ui-monospace,Menlo,monospace;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-align:center;padding:.08rem .4rem;margin-right:.5rem;border-radius:3px;background:var(--surface2);color:var(--muted)}
+.scope-tag.in{background:var(--accent-dim);color:var(--accent)}
+.scope-tag.later{color:var(--gb-blue)}
+.exec{max-width:78ch;margin-bottom:1rem}
+.exec-bar{display:flex;gap:2px;height:.75rem;margin:.2rem 0 .55rem}
+.exec-bar span{min-width:2px;border-radius:2px}
+.exec-bar .done,.exec-legend i.done{background:var(--accent)}
+.exec-bar .review,.exec-legend i.review{background:var(--gb-blue)}
+.exec-bar .progress,.exec-legend i.progress{background:var(--gb-yellow)}
+.exec-bar .todo,.exec-legend i.todo{background:var(--rule)}
+.exec-legend{display:flex;flex-wrap:wrap;gap:.3rem 1.1rem;font-family:ui-monospace,Menlo,monospace;font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.exec-legend span{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.exec-legend b{color:var(--ink);font-weight:700}
+.exec-legend i{width:.65rem;height:.65rem;border-radius:2px;display:inline-block}
+.exec-legend .exec-total{margin-left:auto}
+.milestones{display:flex;flex-direction:column;gap:.45rem}
+.milestones li.ms{margin:0;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--m,var(--muted));border-radius:5px;padding:.5rem .85rem}
+.milestones li.ms.gate{border:1px dashed var(--warn);border-left:3px dashed var(--warn)}
+.ms-line{display:flex;align-items:baseline;gap:.35rem .7rem;flex-wrap:wrap}
+.ms-name{font-weight:600;font-size:.95rem}
+.ms-id{font-family:ui-monospace,Menlo,monospace;font-weight:700;margin-right:.3rem}
+.ms-count{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted);margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ms-state.is-progress{background:var(--warn-bg);color:var(--gb-yellow);font-weight:700}
+.ms-state.is-done{background:var(--accent-dim);color:var(--accent);font-weight:700}
+.ms-goal{font-size:.88rem;color:var(--ink-mid);margin-top:.15rem}
+
+.entry{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:.7rem 1rem;margin-bottom:.7rem;max-width:84ch;scroll-margin-top:70px}
+.entry-head{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.entry-id{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.85rem;color:var(--accent)}
+.entry-title{font-weight:600;font-size:.95rem}
+.entry-scope{font-family:ui-monospace,Menlo,monospace;font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;padding:.1rem .45rem;border-radius:3px;border:1px solid var(--rule);color:var(--muted);margin-left:auto;white-space:nowrap}
+.entry>ul{font-size:.88rem;color:var(--ink-mid);margin:.4rem 0 0}
+.entry>pre{font-size:.8rem;overflow-x:auto;background:var(--surface2);padding:.5rem .7rem;border-radius:4px;margin:.4rem 0 0}
+.entry-links,.task-refs{font-size:.78rem;color:var(--muted);margin:.4rem 0 0}
+.entry-links a,.task-refs a{font-family:ui-monospace,Menlo,monospace;font-weight:600;margin-right:.35rem}
+
+.legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-family:ui-monospace,Menlo,monospace;font-size:.7rem;color:var(--muted);margin-bottom:.8rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap}
+.legend i{width:.65rem;height:.65rem;border-radius:2px;display:inline-block}
+.legend .gate-key{border:1px dashed var(--warn);border-radius:3px;padding:0 .3rem;color:var(--warn)}
+.board{background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow-x:auto;position:relative}
+.canvas{position:relative}
+.canvas svg{position:absolute;inset:0;pointer-events:none}
+.canvas svg path{fill:none;stroke:var(--edge);stroke-width:1.2;opacity:.55;transition:opacity .15s,stroke .15s}
+.canvas.tracing svg path{opacity:.07}
+.canvas.tracing svg path.up{stroke:var(--accent);stroke-width:2;opacity:1}
+.canvas.tracing svg path.down{stroke:var(--unblocks);stroke-width:2;opacity:1}
+.chip{position:absolute;width:132px;height:42px;background:var(--surface);border:1px solid var(--rule);
+  border-left:3px solid var(--m,var(--muted));border-radius:5px;padding:.28rem .5rem .28rem .55rem;
+  cursor:default;transition:opacity .15s,box-shadow .15s}
+.chip .cid{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.72rem;color:var(--m,var(--ink))}
+.chip .clabel{display:block;font-size:.66rem;color:var(--ink-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.gate{border:1px dashed var(--warn);border-left:3px dashed var(--warn);background:var(--warn-bg)}
+.chip.gate .cid{color:var(--warn)}
+.canvas.tracing .chip{opacity:.22}
+.canvas.tracing .chip.focus{opacity:1;box-shadow:0 0 0 2px var(--accent)}
+.canvas.tracing .chip.up-n{opacity:1;box-shadow:0 0 0 1.5px var(--accent)}
+.canvas.tracing .chip.down-n{opacity:1;box-shadow:0 0 0 1.5px var(--unblocks)}
+.trace-note{font-size:.78rem;color:var(--muted);margin-top:.6rem;min-height:1.2em}
+.trace-note b{color:var(--ink)}
+
+#wave-table td{vertical-align:top}
+#wave-table td:first-child{white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--muted)}
+.wave-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .55rem;margin:.15rem .35rem .15rem 0;border:1px solid var(--rule);border-radius:5px;background:var(--surface);font-size:.82rem;color:var(--ink)}
+.wave-chip:hover{background:var(--surface2);text-decoration:none}
+.wave-chip .wave-id{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--accent)}
+.wave-chip.gate{border-style:dashed;border-color:var(--warn);color:var(--warn)}
+.wave-chip.gate .wave-id{color:var(--warn)}
+:root{--active-edge:color-mix(in srgb,var(--gb-blue) 45%,var(--rule))}
+.chip .cmark{position:absolute;top:.26rem;right:.45rem;font-family:ui-monospace,Menlo,monospace;font-size:.56rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.chip.is-done{background:var(--bg);opacity:.55}
+.chip.is-done .clabel{text-decoration:line-through;color:var(--muted)}
+.chip.is-done .cmark{color:var(--muted);font-size:.7rem;top:.18rem}
+.chip.is-ready{background:var(--accent-dim);border-top-color:var(--accent);border-right-color:var(--accent);border-bottom-color:var(--accent)}
+.chip.is-ready .cmark{color:var(--accent)}
+.chip.is-active{background:color-mix(in srgb,var(--gb-blue) 11%,var(--surface));border-top-color:var(--active-edge);border-right-color:var(--active-edge);border-bottom-color:var(--active-edge)}
+.chip.is-active .cmark{color:var(--gb-blue);font-size:.6rem;top:.2rem}
+.canvas svg path.met{stroke-dasharray:3 3}
+.wave-chip.is-done{opacity:.6}
+.wave-chip.is-done .wave-label{text-decoration:line-through;color:var(--muted)}
+.wave-chip.is-done .wave-id{color:var(--muted)}
+.wave-chip.is-ready{background:var(--accent-dim);border-color:var(--accent)}
+.wave-chip.is-active{background:color-mix(in srgb,var(--gb-blue) 11%,var(--surface));border-color:var(--active-edge)}
+.legend .mark-key{border:1px solid var(--rule);border-radius:3px;padding:0 .35rem}
+.legend .mark-key.done{text-decoration:line-through;opacity:.6}
+.legend .mark-key.ready{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.legend .mark-key.active{background:color-mix(in srgb,var(--gb-blue) 11%,var(--surface));border-color:var(--active-edge)}
+
+.milestone-group{margin:2.2rem 0}
+.milestone-group summary{cursor:pointer;list-style:none}
+.milestone-group summary::-webkit-details-marker{display:none}
+.milestone{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.milestone::before{content:'▸';display:inline-block;transition:transform .12s;color:var(--muted)}
+.milestone-group[open]>summary .milestone::before{transform:rotate(90deg)}
+.milestone::after{content:'';flex:1;height:1px;background:var(--rule)}
+.milestone-group>summary{margin-bottom:.9rem;scroll-margin-top:70px}
+.task{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:.9rem 1.1rem;margin-bottom:.9rem;scroll-margin-top:70px}
+.task-head{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.task-id{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem;color:var(--accent)}
+.task-title{font-weight:600;font-size:.98rem}
+.pts{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;font-weight:700;padding:.1rem .5rem;border-radius:9px;border:1px solid currentColor;margin-left:auto;white-space:nowrap}
+.pts.p1{color:var(--gb-gray)} .pts.p2{color:var(--gb-aqua)} .pts.p3{color:var(--gb-blue)} .pts.p5{color:var(--gb-orange)}
+.status{font-family:ui-monospace,Menlo,monospace;font-size:.68rem;letter-spacing:.05em;padding:.12rem .5rem;border-radius:3px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.task-body{font-size:.9rem;color:var(--ink-mid);margin:.45rem 0 .2rem;max-width:78ch}
+.impl{font-size:.9rem;color:var(--ink-mid);max-width:78ch}
+.fold{margin-top:.5rem}
+.fold>summary{cursor:pointer;list-style:none;font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:'▸';display:inline-block;width:1em;transition:transform .12s}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>summary+*{margin-top:.35rem}
+.check{list-style:none;padding-left:0;font-size:.88rem}
+.check li{padding-left:1.4rem;position:relative;margin:.22rem 0}
+.check li::before{content:'▢';position:absolute;left:.2rem;color:var(--muted)}
+.check li.done::before{content:'✔';color:var(--accent)}
+.pending{font-size:.68rem;font-weight:700;letter-spacing:.05em;padding:.12rem .5rem;border-radius:3px;background:var(--warn-bg);color:var(--warn)}
+.flash{animation:flash 1.2s ease-out}
+@keyframes flash{0%{background:var(--accent-dim)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}.chip,.canvas svg path{transition:none}.milestone::before,.fold>summary::before{transition:none}}
+</style>
+
+<div class="topbar"><div class="topbar-inner">
+  <span class="doc-title">ordenes-rx / plan</span>
+  <button class="tab-btn active" id="btn-overview" onclick="switchTab('overview')">Overview</button>
+  <button class="tab-btn" id="btn-tasks" onclick="switchTab('tasks')">Tasks</button>
+  <button class="tab-btn" id="btn-decisions" onclick="switchTab('decisions')">Decisions</button>
+  <button class="tab-btn" id="btn-technical" onclick="switchTab('technical')">Technical Details</button>
+  <button class="theme-toggle" onclick="toggleTheme()">⬡ theme</button>
+</div></div>
+
+<main class="main">
+<section class="project-summary">Plataforma web para digitalizar las órdenes radiológicas de un centro de radiología dental en Chile, con sitio informativo de una página, formulario multi-paso, generación de PDF y notificaciones por correo y WhatsApp.</section>
+
+<!-- ══════════════════ OVERVIEW TAB ══════════════════ -->
+<section class="panel active" id="panel-overview" data-tab="overview">
+  <p class="lede">Los centros de radiología dental gestionan las órdenes de exámenes con formularios de papel que los odontólogos llenan a mano, lo que genera errores, demoras y dificultades para contactar al paciente. Esta plataforma digitaliza ese proceso: el odontólogo completa la orden en línea, el paciente la recibe por correo y WhatsApp, y la sucursal es notificada para agendar la atención.</p>
+
+  <h2>Reference links</h2>
+  <ul>
+    <li><a href="https://prx.cl/wp-content/uploads/2024/07/orden_medica.pdf">Formulario de orden médica en papel (PRX)</a></li>
+    <li><a href="https://tuimagenrx.cl">Referencia de landing page (Tu Imagen RX)</a></li>
+  </ul>
+
+  <h2>Scope</h2>
+  <ul class="scope">
+    <li><span class="scope-tag in">In</span>Sitio informativo de una página con accesos a los tres sistemas (portal pacientes, portal odontólogos, plataforma de órdenes).</li>
+    <li><span class="scope-tag in">In</span>Autenticación con roles de administrador y odontólogo, con CAPTCHA en el login.</li>
+    <li><span class="scope-tag in">In</span>Gestión de odontólogos por parte del administrador.</li>
+    <li><span class="scope-tag in">In</span>Mantenedor de sucursales con datos de ubicación y contacto.</li>
+    <li><span class="scope-tag in">In</span>Formulario de órdenes multi-paso con validación y confirmación de consentimiento del paciente.</li>
+    <li><span class="scope-tag in">In</span>Panel de selección de exámenes con nomenclatura dental ADA/FDI.</li>
+    <li><span class="scope-tag in">In</span>Plantillas de órdenes prellenadas para exámenes frecuentes.</li>
+    <li><span class="scope-tag in">In</span>Generación de PDF de la orden con imagen corporativa y almacenamiento temporal en S3.</li>
+    <li><span class="scope-tag in">In</span>Envío de la orden al paciente por correo (adjunto) y WhatsApp (inline vía Twilio).</li>
+    <li><span class="scope-tag in">In</span>Asignación automática de sucursal y notificación a la sucursal asignada.</li>
+    <li><span class="scope-tag out">Out</span>Integración con sistemas externos existentes más allá de enlaces desde el sitio web.</li>
+    <li><span class="scope-tag out">Out</span>Agendamiento de horas en línea.</li>
+    <li><span class="scope-tag out">Out</span>Aplicaciones móviles nativas.</li>
+    <li><span class="scope-tag out">Out</span>Producción de contenidos, fotografías y diseño de marca; el centro entrega textos, logotipo e imágenes.</li>
+    <li><span class="scope-tag out">Out</span>Geolocalización avanzada o cálculo de distancias para asignación de sucursal.</li>
+    <li><span class="scope-tag out">Out</span>Costos variables por mensaje de WhatsApp y correo cobrados por Twilio.</li>
+  </ul>
+
+  <h2>Execution</h2>
+  <ul class="milestones">
+    <li data-ms="A"><strong>A — Fundaciones y landing</strong> — Repositorio, esqueleto de la app, infraestructura en DigitalOcean, CI/CD, protección de rama y sitio informativo de una página.</li>
+    <li data-ms="B"><strong>B — Usuarios y sucursales</strong> — Autenticación, gestión de odontólogos por parte del admin y mantenedor de sucursales.</li>
+    <li data-ms="C"><strong>C — Órdenes y plantillas</strong> — Modelo de datos de órdenes, formulario multi-paso con panel de exámenes y plantillas de prellenado.</li>
+    <li data-ms="D"><strong>D — PDF e integraciones</strong> — Generación de PDF, envío por correo y WhatsApp al paciente, y notificación a la sucursal.</li>
+  </ul>
+
+  <h2>Open decisions</h2>
+  <div class="entry decision open" id="dec-1">
+    <div class="entry-head"><span class="entry-id">DEC1</span><span class="entry-title">¿Qué stack tecnológico usar para el proyecto?</span><span class="pending">PENDING</span></div>
+    <ul>
+      <li><strong>Options:</strong> Python (Django o FastAPI) + React/Next.js, Node.js (Express o Nest) + React/Next.js, Laravel (PHP), u otro framework fullstack.</li>
+      <li><strong>Context:</strong> La base de datos ya está definida como PostgreSQL y el hosting será DigitalOcean. El stack debe soportar generación de PDF, integración con Twilio y despliegue en VPS. El equipo debe discutir la elección.</li>
+    </ul>
+  </div>
+  <div class="entry decision open" id="dec-2">
+    <div class="entry-head"><span class="entry-id">DEC2</span><span class="entry-title">¿Cuál es la regla para asignar automáticamente una sucursal cuando el odontólogo no la elige?</span><span class="pending">PENDING</span></div>
+    <ul>
+      <li><strong>Options:</strong> La sucursal de la misma comuna del paciente, una sucursal por defecto definida para cada comuna, o la sucursal más cercana por dirección.</li>
+      <li><strong>Context:</strong> La propuesta sugiere usar la comuna del paciente o una sucursal por defecto por comuna. La geolocalización avanzada está fuera del alcance. Debe definirse con el cliente.</li>
+    </ul>
+  </div>
+  <div class="entry decision open" id="dec-3">
+    <div class="entry-head"><span class="entry-id">DEC3</span><span class="entry-title">¿Quién gestiona las plantillas de órdenes prellenadas?</span><span class="pending">PENDING</span></div>
+    <ul>
+      <li><strong>Options:</strong> Solo el administrador, o también los odontólogos pueden crear sus propias plantillas.</li>
+      <li><strong>Context:</strong> Tentativamente el administrador es quien crea y gestiona las plantillas genéricas. Si los odontólogos también pueden crear las suyas, se necesita separar plantillas globales de personales.</li>
+    </ul>
+  </div>
+  <div class="entry decision open" id="dec-10">
+    <div class="entry-head"><span class="entry-id">DEC10</span><span class="entry-title">¿La base de datos PostgreSQL será un servicio administrado de DigitalOcean o se ejecutará en el mismo VPS?</span><span class="pending">PENDING</span></div>
+    <ul>
+      <li><strong>Options:</strong> DigitalOcean Managed Databases (servicio administrado con backups y actualizaciones automáticas) o PostgreSQL instalado directamente en el VPS.</li>
+      <li><strong>Context:</strong> El servicio administrado simplifica la operación pero tiene un costo adicional. PostgreSQL en el VPS reduce costos pero requiere mantención manual de backups y actualizaciones.</li>
+    </ul>
+  </div>
+  <div class="entry decision open" id="dec-8">
+    <div class="entry-head"><span class="entry-id">DEC8</span><span class="entry-title">¿Cuáles son los campos definitivos del formulario de orden?</span><span class="pending">PENDING</span></div>
+    <ul>
+      <li><strong>Context:</strong> Los campos actuales están basados en el formulario de papel de PRX. El cliente debe enviar la versión definitiva; la estructura de exámenes, categorías y sub-opciones puede cambiar. Listado en la propuesta como punto por confirmar. Si el formulario definitivo incluye campos o categorías no contemplados en esta versión del breakdown, se deberán agregar nuevas tareas.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ TASKS TAB ══════════════════ -->
+<section class="panel" id="panel-tasks" data-tab="tasks">
+  <div class="legend" id="legend"></div>
+  <div class="board"><div class="canvas" id="canvas"><svg id="edges"></svg></div></div>
+  <p class="trace-note" id="trace-note"></p>
+  <div class="table-wrap"><table id="wave-table"><thead><tr><th>Wave</th><th>Tasks</th></tr></thead><tbody id="wave-body"></tbody></table></div>
+
+  <!-- Milestone A -->
+  <details class="milestone-group" open>
+    <summary><span class="milestone">Milestone A — Fundaciones y landing</span></summary>
+
+    <div class="task" id="task-A1">
+      <div class="task-head"><span class="task-id">A1</span><span class="task-title">Repositorio y esqueleto de la app</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Crear el repositorio y el esqueleto base de la aplicación con su estructura de carpetas, dependencias y sistema de migraciones.</p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Crear repositorio en GitHub con estructura de carpetas según el framework elegido en <a href="#dec-1">DEC1</a>.</li>
+          <li>Esqueleto base de la app: punto de entrada, configuración, manejo de dependencias.</li>
+          <li>Configurar sistema de migraciones de base de datos.</li>
+          <li>La app debe arrancar localmente y mostrar una página placeholder.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li>Decision <a href="#dec-1">DEC1</a> — qué stack tecnológico usar.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: el proyecto se instala y la suite de tests vacía pasa localmente.</li>
+          <li>Manual: iniciar la app localmente y ver una página placeholder.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-A2">
+      <div class="task-head"><span class="task-id">A2</span><span class="task-title">Landing page informativa</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Construir el sitio informativo de una página con navegación por scroll, secciones del centro y accesos destacados a los tres sistemas.</p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Diseño responsive (mobile-first) con secciones: hero, servicios, sucursales, contacto.</li>
+          <li>Tres botones destacados: portal de radiografías (sistema externo), portal de odontólogos (sistema externo), plataforma de órdenes (enlace interno).</li>
+          <li>Configuración básica de SEO: meta tags, títulos y descripciones.</li>
+          <li>El contenido de texto e imágenes lo entrega el centro; usar placeholders hasta entonces.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-A1">A1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: los tres enlaces de acceso renderizan correctamente y apuntan a las URLs configuradas.</li>
+          <li>Manual: abrir el sitio en móvil y desktop, verificar que todas las secciones cargan y los enlaces funcionan.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-A3">
+      <div class="task-head"><span class="task-id">A3</span><span class="task-title">Infraestructura en DigitalOcean</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Provisionar la infraestructura en DigitalOcean: VPS, base de datos PostgreSQL, dominio, HTTPS y pipeline de deploy.</p>
+      <p class="task-refs">Refs <a href="#td-6">TD6</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Crear y configurar VPS (droplet) en DigitalOcean con Ubuntu.</li>
+          <li>Provisionar PostgreSQL según <a href="#dec-10">DEC10</a> (servicio administrado o en el VPS).</li>
+          <li>Registrar dominio .cl y configurar DNS apuntando al VPS.</li>
+          <li>Configurar HTTPS con Let's Encrypt y renovación automática.</li>
+          <li>Configurar pipeline de deploy automático desde la rama principal.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-A1">A1</a> — debe estar mergeado.</li>
+          <li>Decision <a href="#dec-10">DEC10</a> — si PostgreSQL será servicio administrado o en el VPS.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: el pipeline de deploy ejecuta exitosamente y la app arranca en el servidor.</li>
+          <li>Manual: acceder al dominio por HTTPS y ver la app funcionando con la página placeholder.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-A4">
+      <div class="task-head"><span class="task-id">A4</span><span class="task-title">Linting, pre-commit hooks y CI</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Configurar las herramientas de linting del stack elegido, pre-commit hooks y GitHub Actions para ejecutar lint y tests en cada PR.</p>
+      <p class="task-refs">Refs <a href="#dec-1">DEC1</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Configurar linters apropiados para el stack elegido en <a href="#dec-1">DEC1</a> (ej: ESLint, Flake8, Prettier, Black, según corresponda).</li>
+          <li>Configurar pre-commit hooks que ejecuten los linters antes de cada commit.</li>
+          <li>Crear workflow de GitHub Actions que ejecute lint y tests en cada PR.</li>
+          <li>Los checks deben pasar antes de poder mergear un PR.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-A1">A1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: el workflow de CI ejecuta lint y tests y pasa en verde. Un archivo con errores de lint falla el pre-commit hook localmente.</li>
+          <li>Manual: hacer un commit con un error de lint y verificar que el hook lo rechaza. Abrir un PR y verificar que los checks de GitHub Actions corren.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-A5">
+      <div class="task-head"><span class="task-id">A5</span><span class="task-title">Protección de rama y plantilla de PR</span><span class="status">Not started</span><span class="pts p1">1 pt</span></div>
+      <p class="task-body">Goal: Configurar la protección de la rama principal para que los cambios solo entren vía PR con squash merge, y crear la plantilla de PR del proyecto.</p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Configurar branch protection en GitHub: prohibir push directo a main, requerir PR para todos los cambios.</li>
+          <li>Configurar squash merge como método obligatorio: cada PR se mergea como un solo commit.</li>
+          <li>Requerir que los status checks de CI (lint y tests de <a href="#task-A4">A4</a>) pasen antes de mergear.</li>
+          <li>Crear plantilla de PR en <code>.github/pull_request_template.md</code> con dos secciones: descripción breve y cómo probar.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-A4">A4</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: un push directo a main es rechazado por GitHub.</li>
+          <li>Manual: crear un PR y verificar que usa la plantilla, requiere checks verdes y solo permite squash merge.</li>
+        </ul>
+      </details>
+    </div>
+  </details>
+
+  <!-- Milestone B -->
+  <details class="milestone-group" open>
+    <summary><span class="milestone">Milestone B — Usuarios y sucursales</span></summary>
+
+    <div class="task" id="task-B1">
+      <div class="task-head"><span class="task-id">B1</span><span class="task-title">Autenticación y roles</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar el sistema de login con CAPTCHA, sesiones y los dos roles del sistema (administrador y odontólogo).</p>
+      <p class="task-refs">Refs <a href="#td-1">TD1</a> <a href="#td-7">TD7</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Login con usuario y contraseña, protegido con CAPTCHA.</li>
+          <li>Dos roles: administrador y odontólogo, según <a href="#td-1">TD1</a>.</li>
+          <li>Contraseñas almacenadas con hash seguro (bcrypt o argon2).</li>
+          <li>Sesiones con expiración configurable.</li>
+          <li>Middleware de autorización que restringe rutas por rol.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-A2">A2</a> — debe estar mergeado.</li>
+          <li><a href="#task-A3">A3</a> — debe estar mergeado.</li>
+          <li><a href="#task-A5">A5</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: un usuario admin y un odontólogo inician sesión exitosamente. Un login con credenciales incorrectas no revela si el usuario existe. Las rutas de admin rechazan a un odontólogo.</li>
+          <li>Manual: iniciar sesión como admin y como odontólogo, verificar que cada uno ve solo las opciones de su rol.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-B2">
+      <div class="task-head"><span class="task-id">B2</span><span class="task-title">CRUD de odontólogos</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar la gestión de odontólogos por parte del administrador: crear, editar, desactivar y restablecer contraseña.</p>
+      <p class="task-refs">Refs <a href="#td-1">TD1</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>CRUD completo: crear odontólogo con datos profesionales, editar, desactivar (no eliminar) y restablecer contraseña.</li>
+          <li>Solo el admin puede registrar nuevos usuarios; no existe auto-registro.</li>
+          <li>Listado de odontólogos con filtro por estado (activo/inactivo).</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-B1">B1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: el admin crea un odontólogo y este inicia sesión. Un odontólogo desactivado no puede iniciar sesión. Un odontólogo no puede acceder al CRUD de usuarios.</li>
+          <li>Manual: crear un odontólogo, desactivarlo, verificar que no puede iniciar sesión, reactivarlo.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-B3">
+      <div class="task-head"><span class="task-id">B3</span><span class="task-title">Mantenedor de sucursales</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar el CRUD de sucursales del centro con dirección, comuna y datos de contacto.</p>
+      <p class="task-refs">Refs <a href="#td-3">TD3</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Campos: nombre, dirección, comuna, teléfono, WhatsApp y correo.</li>
+          <li>Accesible solo para el admin.</li>
+          <li>Los datos de la sucursal se muestran en la orden y se usan para la notificación.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-B1">B1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: el admin crea una sucursal con todos sus campos y la consulta retorna los datos correctos. Un odontólogo no puede crear ni editar sucursales.</li>
+          <li>Manual: crear una sucursal, editarla, verificar que los cambios persisten.</li>
+        </ul>
+      </details>
+    </div>
+  </details>
+
+  <!-- Milestone C -->
+  <details class="milestone-group" open>
+    <summary><span class="milestone">Milestone C — Órdenes y plantillas</span></summary>
+
+    <div class="task" id="task-C1">
+      <div class="task-head"><span class="task-id">C1</span><span class="task-title">Modelo de datos y API de órdenes</span><span class="status">Not started</span><span class="pts p3">3 pts</span></div>
+      <p class="task-body">Goal: Definir el schema de órdenes radiológicas y exponer endpoints para crear y listar órdenes.</p>
+      <p class="task-refs">Refs <a href="#td-1">TD1</a> <a href="#td-2">TD2</a> <a href="#td-3">TD3</a> <a href="#td-4">TD4</a> <a href="#dec-8">DEC8</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Modelo de orden: referencia al odontólogo, datos del paciente (nombre, RUT, fecha de nacimiento, email, WhatsApp), exámenes solicitados (JSON estructurado para las tres categorías según <a href="#td-4">TD4</a>), motivo y observaciones, sucursal asignada, confirmación de consentimiento, URL del PDF, timestamps y estado de envío.</li>
+          <li>Datos del paciente embebidos en la orden, no como entidad separada.</li>
+          <li>Endpoint de creación con validación de campos obligatorios y confirmación de consentimiento.</li>
+          <li>Endpoint de listado filtrado por odontólogo autenticado.</li>
+          <li>Registro de auditoría: qué odontólogo generó cada orden.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-B3">B3</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: un odontólogo autenticado crea una orden con datos completos y la recupera en su listado. Una orden sin consentimiento confirmado es rechazada. Un odontólogo no ve órdenes de otro.</li>
+          <li>Manual: crear una orden vía API, verificar que aparece en el listado del odontólogo y no en el de otro.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-C2">
+      <div class="task-head"><span class="task-id">C2</span><span class="task-title">Formulario de órdenes multi-paso</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar la estructura del formulario de órdenes organizado por pasos: datos del paciente, motivo, selección de sucursal y confirmación con consentimiento.</p>
+      <p class="task-refs">Refs <a href="#td-5">TD5</a> <a href="#dec-8">DEC8</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Pasos 1, 3, 4 y 5 según <a href="#td-5">TD5</a>: datos del paciente, motivo y observaciones, selección de sucursal, y confirmación con consentimiento.</li>
+          <li>El paso 2 (exámenes) se implementa como placeholder que <a href="#task-C3">C3</a> completará con el panel de selección de exámenes.</li>
+          <li>Selector de sucursal con datos de contacto de cada una.</li>
+          <li>Checkbox obligatorio de confirmación de consentimiento del paciente.</li>
+          <li>Validación por paso antes de avanzar al siguiente.</li>
+          <li>Diseño responsive para uso desde móvil.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-C1">C1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: completar los pasos implementados y confirmar crea una orden con los datos correctos en la base de datos. Un paso con campos obligatorios vacíos no permite avanzar. La confirmación de consentimiento es obligatoria para enviar.</li>
+          <li>Manual: completar el formulario en móvil y desktop, verificar que la orden creada refleja los datos ingresados.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-C3">
+      <div class="task-head"><span class="task-id">C3</span><span class="task-title">Panel de selección de exámenes</span><span class="status">Not started</span><span class="pts p3">3 pts</span></div>
+      <p class="task-body">Goal: Implementar el paso 2 del formulario con la selección de exámenes en tres categorías y el diagrama de nomenclatura dental ADA/FDI.</p>
+      <p class="task-refs">Refs <a href="#td-4">TD4</a> <a href="#td-5">TD5</a> <a href="#dec-8">DEC8</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Tres categorías de exámenes no mutuamente excluyentes según <a href="#td-4">TD4</a>: tomografía computarizada (cone beam), radiografía convencional y escáner intraoral.</li>
+          <li>Cada categoría con sus sub-opciones y campos de indicar piezas.</li>
+          <li>Diagrama interactivo de nomenclatura dental con toggle ADA/FDI para los campos de indicar piezas.</li>
+          <li>Análisis cefalométrico con opciones específicas (Steiner, Jarabak, Sassouni Plus, Ricketts, Roth, USP, Speed-Marden Bastos, otro).</li>
+          <li>Se integra como el paso 2 en el formulario multi-paso de <a href="#task-C2">C2</a>.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-C2">C2</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: seleccionar exámenes de las tres categorías con piezas indicadas genera el JSON correcto en la orden. El toggle ADA/FDI cambia la notación en los campos de piezas. Al menos un examen debe estar seleccionado para avanzar.</li>
+          <li>Manual: seleccionar exámenes de cada categoría con piezas específicas, verificar que la orden refleja la selección completa incluyendo la notación dental usada.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-C4">
+      <div class="task-head"><span class="task-id">C4</span><span class="task-title">Plantillas de órdenes prellenadas</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar el mantenedor de plantillas genéricas que pre-completan los campos de exámenes del formulario.</p>
+      <p class="task-refs">Refs <a href="#td-4">TD4</a> <a href="#td-5">TD5</a> <a href="#dec-3">DEC3</a> <a href="#dec-8">DEC8</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>CRUD de plantillas accesible para el admin (tentativamente; depende de <a href="#dec-3">DEC3</a>).</li>
+          <li>Cada plantilla define un conjunto de exámenes preseleccionados usando la misma estructura JSON de <a href="#td-4">TD4</a>.</li>
+          <li>Al crear una orden, el odontólogo elige una plantilla y los campos de exámenes se pre-completan.</li>
+          <li>El odontólogo recorre todos los pasos del formulario igualmente; la plantilla solo ahorra tiempo de llenado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-C3">C3</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: seleccionar una plantilla pre-completa los campos del formulario con los valores definidos y el odontólogo puede modificarlos antes de confirmar. Una plantilla vacía (sin exámenes) no se puede guardar.</li>
+          <li>Manual: crear una plantilla, usarla al crear una orden, modificar un campo prellenado, verificar que la orden refleja el cambio.</li>
+        </ul>
+      </details>
+    </div>
+  </details>
+
+  <!-- Milestone D -->
+  <details class="milestone-group" open>
+    <summary><span class="milestone">Milestone D — PDF e integraciones</span></summary>
+
+    <div class="task" id="task-D1">
+      <div class="task-head"><span class="task-id">D1</span><span class="task-title">Generación de PDF de la orden</span><span class="status">Not started</span><span class="pts p3">3 pts</span></div>
+      <p class="task-body">Goal: Generar un PDF con imagen corporativa del centro a partir de una orden confirmada y almacenarlo temporalmente en S3.</p>
+      <p class="task-refs">Refs <a href="#td-2">TD2</a> <a href="#td-4">TD4</a> <a href="#td-6">TD6</a> <a href="#td-7">TD7</a> <a href="#dec-8">DEC8</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>PDF con: logo del centro, datos del odontólogo, datos del paciente, exámenes solicitados con detalle de piezas, motivo y observaciones, y datos de contacto de la sucursal para agendar.</li>
+          <li>Subir el PDF a DigitalOcean Spaces (S3-compatible) para que Twilio pueda consumirlo en el envío por WhatsApp.</li>
+          <li>Registrar la referencia al PDF en la orden.</li>
+          <li>Los enlaces no deben ser indexables por buscadores (noindex, nofollow).</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-C1">C1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: una orden genera un PDF legible con todos los campos y se sube a S3 exitosamente.</li>
+          <li>Manual: generar un PDF desde una orden de prueba, descargarlo, verificar que el contenido es correcto y legible.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-D2">
+      <div class="task-head"><span class="task-id">D2</span><span class="task-title">Envío al paciente por correo y WhatsApp</span><span class="status">Not started</span><span class="pts p3">3 pts</span></div>
+      <p class="task-body">Goal: Enviar la orden al paciente por correo electrónico (PDF adjunto) y WhatsApp (PDF inline vía Twilio), eliminando el archivo de S3 después del envío.</p>
+      <p class="task-refs">Refs <a href="#td-2">TD2</a> <a href="#td-6">TD6</a> <a href="#dec-9">DEC9</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Correo electrónico con el PDF como adjunto directo, para que el paciente lo tenga en su bandeja sin depender de un enlace temporal.</li>
+          <li>WhatsApp vía Twilio con el PDF inline (Twilio consume el archivo desde S3).</li>
+          <li>El mensaje incluye los datos de la sucursal para que el paciente agende.</li>
+          <li>Disparar el envío automáticamente al confirmar la orden y generar el PDF.</li>
+          <li>Eliminar el PDF de S3 después de que ambos envíos se completen exitosamente.</li>
+          <li>Manejo de errores: registro de fallos de envío sin interrumpir el flujo principal.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-D1">D1</a> — debe estar mergeado.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: al confirmar una orden se envía un correo con el PDF adjunto y un WhatsApp al paciente. Un número de WhatsApp inválido registra el error sin interrumpir el flujo. El PDF se elimina de S3 después del envío exitoso.</li>
+          <li>Manual: crear una orden con datos de contacto reales de prueba, verificar que llegan el correo (con adjunto) y el WhatsApp con el PDF.</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="task" id="task-D3">
+      <div class="task-head"><span class="task-id">D3</span><span class="task-title">Asignación y notificación a la sucursal</span><span class="status">Not started</span><span class="pts p2">2 pts</span></div>
+      <p class="task-body">Goal: Implementar la asignación automática de sucursal cuando el odontólogo no la elige y notificar a la sucursal asignada por correo y WhatsApp.</p>
+      <p class="task-refs">Refs <a href="#td-2">TD2</a> <a href="#td-6">TD6</a></p>
+      <details class="fold"><summary>Implementation details</summary>
+        <ul class="impl">
+          <li>Regla de asignación automática según <a href="#dec-2">DEC2</a> (propuesta: por comuna del paciente o sucursal por defecto por comuna).</li>
+          <li>Si el odontólogo seleccionó sucursal en el formulario, se respeta su elección.</li>
+          <li>Notificación a la sucursal por WhatsApp y correo con datos del paciente para contactarlo (sin el PDF; la sucursal no necesita la orden).</li>
+          <li>Reutilizar la infraestructura de envío de Twilio de <a href="#task-D2">D2</a>.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Ready</summary>
+        <ul class="check">
+          <li><a href="#task-D2">D2</a> — debe estar mergeado.</li>
+          <li>Decision <a href="#dec-2">DEC2</a> — cuál es la regla de asignación automática de sucursal.</li>
+        </ul>
+      </details>
+      <details class="fold"><summary>Definition of Done</summary>
+        <ul class="check">
+          <li>Tests: una orden sin sucursal seleccionada asigna la sucursal correcta según la regla definida y envía la notificación. Una orden con sucursal ya seleccionada no cambia la asignación. Una sucursal sin datos de contacto registra la advertencia sin fallar.</li>
+          <li>Manual: crear una orden sin seleccionar sucursal, verificar que se asigna según la regla y que la sucursal recibe la notificación por correo y WhatsApp.</li>
+        </ul>
+      </details>
+    </div>
+  </details>
+</section>
+
+<!-- ══════════════════ DECISIONS TAB ══════════════════ -->
+<section class="panel" id="panel-decisions" data-tab="decisions">
+  <div class="entry decision" id="dec-4">
+    <div class="entry-head"><span class="entry-id">DEC4</span><span class="entry-title">¿Qué base de datos usar?</span></div>
+    <ul>
+      <li><strong>Answer:</strong> PostgreSQL.</li>
+      <li><strong>Why:</strong> El equipo tiene familiaridad con PostgreSQL y es la base de datos con la que trabajan habitualmente.</li>
+    </ul>
+  </div>
+  <div class="entry decision" id="dec-5">
+    <div class="entry-head"><span class="entry-id">DEC5</span><span class="entry-title">¿La landing y la plataforma van en la misma aplicación o separadas?</span></div>
+    <ul>
+      <li><strong>Answer:</strong> Una sola aplicación y un solo repositorio.</li>
+      <li><strong>Why:</strong> Todo forma parte de un solo proyecto con un solo entregable para el cliente al final, por lo que mantenerlo en un solo repo simplifica la entrega.</li>
+      <li><strong>Rejected:</strong> Dos aplicaciones separadas: duplica la entrega y la infraestructura sin beneficio dado que el cliente recibe un solo producto.</li>
+    </ul>
+  </div>
+  <div class="entry decision" id="dec-6">
+    <div class="entry-head"><span class="entry-id">DEC6</span><span class="entry-title">¿Qué proveedor de hosting usar?</span></div>
+    <ul>
+      <li><strong>Answer:</strong> DigitalOcean (VPS + Spaces para S3).</li>
+      <li><strong>Why:</strong> El equipo tiene familiaridad con la plataforma y es el proveedor con el que trabajan habitualmente.</li>
+    </ul>
+  </div>
+  <div class="entry decision" id="dec-7">
+    <div class="entry-head"><span class="entry-id">DEC7</span><span class="entry-title">¿Cuánto tiempo se retienen los PDF de las órdenes?</span></div>
+    <ul>
+      <li><strong>Answer:</strong> Los PDF son temporales: se generan, se envían por correo y WhatsApp, y se eliminan de S3 inmediatamente después del envío exitoso.</li>
+      <li><strong>Why:</strong> El PDF existe solo como medio de transporte para adjuntarlo al correo y para que Twilio lo entregue por WhatsApp. No se necesita como archivo persistente, y eliminarlo reduce el almacenamiento y la superficie de exposición de datos personales.</li>
+    </ul>
+  </div>
+  <div class="entry decision" id="dec-9">
+    <div class="entry-head"><span class="entry-id">DEC9</span><span class="entry-title">¿Cómo se envía la orden al paciente por correo: como adjunto o como enlace de descarga?</span></div>
+    <ul>
+      <li><strong>Answer:</strong> Correo con PDF adjunto; WhatsApp con PDF inline vía Twilio. El archivo en S3 se borra después de ambos envíos.</li>
+      <li><strong>Why:</strong> El paciente tiene el PDF en su bandeja sin depender de un enlace temporal que dejaría de funcionar al borrar el archivo de S3.</li>
+      <li><strong>Rejected:</strong> Enlace temporal en el correo: el PDF se borra de S3 tras el envío, así que el enlace estaría muerto al abrirlo.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ TECHNICAL DETAILS TAB ══════════════════ -->
+<section class="panel" id="panel-technical" data-tab="technical">
+  <h2>Orientation &amp; architecture</h2>
+  <div class="entry detail" id="td-1">
+    <div class="entry-head"><span class="entry-id">TD1</span><span class="entry-title">Actores y roles del sistema</span></div>
+    <ul>
+      <li>Dos roles: administrador y odontólogo.</li>
+      <li>El administrador gestiona odontólogos (CRUD), sucursales y plantillas; no emite órdenes.</li>
+      <li>El odontólogo emite órdenes y puede usar plantillas; no accede a la administración de usuarios, sucursales ni plantillas.</li>
+      <li>Solo el administrador puede dar de alta nuevos usuarios; no existe auto-registro.</li>
+    </ul>
+  </div>
+  <div class="entry detail" id="td-2">
+    <div class="entry-head"><span class="entry-id">TD2</span><span class="entry-title">Flujo de emisión de una orden</span></div>
+    <ul>
+      <li>El odontólogo inicia sesión y completa el formulario de orden (desde cero o con plantilla).</li>
+      <li>Selecciona la sucursal o deja que el sistema la asigne automáticamente.</li>
+      <li>El sistema genera el PDF con imagen corporativa y lo almacena temporalmente en S3.</li>
+      <li>El paciente recibe la orden por correo (PDF adjunto) y WhatsApp (PDF inline vía Twilio).</li>
+      <li>La sucursal recibe una notificación por WhatsApp y correo con los datos del paciente para contactarlo.</li>
+      <li>El PDF se elimina de S3 después del envío exitoso.</li>
+    </ul>
+  </div>
+
+  <h2>Data &amp; interfaces</h2>
+  <div class="entry detail" id="td-3">
+    <div class="entry-head"><span class="entry-id">TD3</span><span class="entry-title">Entidades principales</span></div>
+    <ul>
+      <li><strong>Odontólogo:</strong> nombre, email, teléfono, datos profesionales, estado (activo/inactivo), credenciales de acceso.</li>
+      <li><strong>Sucursal:</strong> nombre, dirección, comuna, teléfono, WhatsApp, correo.</li>
+      <li><strong>Orden:</strong> odontólogo (FK), datos del paciente embebidos (nombre, RUT, fecha de nacimiento, email, WhatsApp), exámenes solicitados (JSON según <a href="#td-4">TD4</a>), motivo y observaciones, sucursal (FK), consentimiento confirmado, referencia al PDF, timestamps, estado de envío.</li>
+      <li><strong>Plantilla:</strong> nombre, exámenes preseleccionados (JSON con misma estructura que la orden), creada por admin.</li>
+    </ul>
+  </div>
+  <div class="entry detail" id="td-4">
+    <div class="entry-head"><span class="entry-id">TD4</span><span class="entry-title">Estructura del formulario de exámenes</span></div>
+    <ul>
+      <li>Tres categorías de exámenes, no mutuamente excluyentes: tomografía computarizada (cone beam), radiografía convencional y escáner intraoral.</li>
+      <li><strong>Tomografía:</strong> estudio de implantes (indicar piezas), ATM (boca abierta/cerrada), zona (1-3 dientes, maxilar, mandibular, bimaxilar, cráneo completo), endodoncia (indicar piezas), fractura radicular (indicar piezas), áreas de interés (texto libre).</li>
+      <li><strong>Radiografía convencional:</strong> retroalveolar (piezas específicas o total), bite-wing (derecha/izquierda), oclusal, panorámica, teleradiografía (lateral/AP), ATM, bite-wing extraoral, rx de mano (carpal/edad ósea), análisis cefalométrico (Steiner, Jarabak, Sassouni Plus, Ricketts, Roth, USP, Speed-Marden Bastos, otro).</li>
+      <li><strong>Escáner intraoral:</strong> arcada superior, arcada inferior, oclusión, solicitud de placa impresa.</li>
+      <li><strong>Nomenclatura dental:</strong> toggle ADA (1-32 adultos, A-T niños) y FDI (1.1-4.8 adultos, 5.1-8.5 niños); los campos de indicar piezas usan la notación seleccionada.</li>
+      <li>Campo global: motivo del examen, observaciones y otros exámenes (texto libre).</li>
+    </ul>
+  </div>
+
+  <h2>Interaction &amp; UI behavior</h2>
+  <div class="entry detail" id="td-5">
+    <div class="entry-head"><span class="entry-id">TD5</span><span class="entry-title">Pasos del formulario de órdenes</span></div>
+    <ul>
+      <li><strong>Paso 1 — Datos del paciente:</strong> nombre, RUT, fecha de nacimiento, email, WhatsApp (+56).</li>
+      <li><strong>Paso 2 — Exámenes solicitados:</strong> selección entre las tres categorías con sus sub-opciones y campos de indicar piezas usando nomenclatura dental (ADA o FDI).</li>
+      <li><strong>Paso 3 — Motivo y observaciones:</strong> motivo del examen, observaciones clínicas y otros exámenes (texto libre).</li>
+      <li><strong>Paso 4 — Selección de sucursal:</strong> lista de sucursales con datos de contacto, o dejar asignación automática.</li>
+      <li><strong>Paso 5 — Confirmación:</strong> resumen de la orden completa, checkbox obligatorio de consentimiento del paciente, y botón de confirmar.</li>
+      <li>Validación por paso: no se avanza sin completar los campos obligatorios del paso actual.</li>
+      <li>Si se usa plantilla, los campos de exámenes del paso 2 se pre-completan pero el odontólogo recorre todos los pasos.</li>
+    </ul>
+  </div>
+
+  <h2>Environment, commands &amp; infra</h2>
+  <div class="entry detail" id="td-6">
+    <div class="entry-head"><span class="entry-id">TD6</span><span class="entry-title">Infraestructura y servicios externos</span></div>
+    <ul>
+      <li><strong>Hosting:</strong> VPS en DigitalOcean con Ubuntu, HTTPS vía Let's Encrypt y deploy automático.</li>
+      <li><strong>Base de datos:</strong> PostgreSQL.</li>
+      <li><strong>Almacenamiento:</strong> DigitalOcean Spaces (S3-compatible) para almacenamiento temporal de PDF; Twilio necesita una URL accesible para enviar el PDF por WhatsApp.</li>
+      <li><strong>Mensajería:</strong> Twilio para envío de WhatsApp y correo electrónico.</li>
+      <li><strong>Dominio:</strong> registro de dominio .cl con certificado SSL.</li>
+      <li><strong>WhatsApp Business:</strong> la cuenta debe ser gestionada y aprobada por el centro (la aprobación por Meta puede afectar plazos de la integración).</li>
+    </ul>
+  </div>
+
+  <h2>Invariants, constraints &amp; rollout</h2>
+  <div class="entry detail" id="td-7">
+    <div class="entry-head"><span class="entry-id">TD7</span><span class="entry-title">Seguridad y protección de datos personales</span></div>
+    <ul>
+      <li>Conexión cifrada (HTTPS) en todo el sitio y la plataforma.</li>
+      <li>Contraseñas almacenadas con hash seguro (bcrypt o argon2), nunca en texto plano.</li>
+      <li>CAPTCHA en el login para prevenir intentos automatizados.</li>
+      <li>PDF en S3 sin indexación pública (noindex, nofollow); se eliminan después del envío.</li>
+      <li>Registro de auditoría: qué odontólogo generó cada orden y cuándo.</li>
+      <li>Confirmación del consentimiento del paciente en cada orden, bajo responsabilidad del odontólogo tratante.</li>
+      <li>Diseño conforme a los principios de la normativa chilena de datos personales (Ley 19.628 y Ley 21.719). Los textos legales (políticas de privacidad, consentimientos) los redacta el centro con su asesoría legal.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<script>
+'use strict';
+function toggleTheme(){
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme');
+  const isDark = current === 'dark' ||
+    (!current && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+}
+function switchTab(name){
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.dataset.tab === name); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  var btn = document.getElementById('btn-' + name);
+  if(btn){ btn.classList.add('active'); }
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', function(e){
+  var a = e.target.closest('a[href^="#"]');
+  if(!a) return;
+  var el = document.getElementById(a.getAttribute('href').slice(1));
+  if(!el) return;
+  e.preventDefault();
+  var panel = el.closest('.panel');
+  if(panel) switchTab(panel.dataset.tab);
+  for(var d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')){ d.open = true; }
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+});
+
+const MILESTONES = {
+  A: {name:'Fundaciones y landing'},
+  B: {name:'Usuarios y sucursales'},
+  C: {name:'Órdenes y plantillas'},
+  D: {name:'PDF e integraciones'},
+};
+const TASKS = [
+  ['A1','Repo y esqueleto','A',[]],
+  ['A2','Landing page','A',['A1']],
+  ['A3','Infra DigitalOcean','A',['A1']],
+  ['A4','Linting y CI','A',['A1']],
+  ['A5','Rama y PR template','A',['A4']],
+  ['B1','Auth y roles','B',['A2','A3','A5']],
+  ['B2','CRUD odontólogos','B',['B1']],
+  ['B3','Mantenedor sucursales','B',['B1']],
+  ['C1','Modelo y API órdenes','C',['B3']],
+  ['C2','Formulario multi-paso','C',['C1']],
+  ['C3','Panel de exámenes','C',['C2']],
+  ['C4','Plantillas prellenado','C',['C3']],
+  ['D1','Generación de PDF','D',['C1']],
+  ['D2','Envío correo y WhatsApp','D',['D1']],
+  ['D3','Notificación sucursal','D',['D2']],
+];
+
+const MILESTONE_HUES = ['aqua','blue','orange','yellow','purple','green','red'];
+const hueOf = {};
+Object.keys(MILESTONES).filter(k => k !== 'X').forEach((k, i) => hueOf[k] = MILESTONE_HUES[i % MILESTONE_HUES.length]);
+const CW=132, CH=42, XGAP=58, YGAP=16, PAD=22;
+const byId = {}; TASKS.forEach(n => byId[n[0]] = {id:n[0], label:n[1], m:n[2], deps:n[3], succ:[]});
+const nodes = Object.values(byId);
+nodes.forEach(n => n.deps.forEach(d => byId[d].succ.push(n.id)));
+
+function layerOf(n){ if(n._l !== undefined) return n._l; n._l = n.deps.length ? Math.max(...n.deps.map(d=>layerOf(byId[d])))+1 : 0; return n._l; }
+nodes.forEach(layerOf);
+const L = Math.max(...nodes.map(n=>n._l))+1;
+const cols = Array.from({length:L}, ()=>[]);
+nodes.forEach(n => cols[n._l].push(n));
+
+const pos = n => cols[n._l].indexOf(n);
+function sortBy(refIds){ return (a,b) => {
+  const bary = n => { const r = refIds(n).map(id=>pos(byId[id])); return r.length ? r.reduce((s,v)=>s+v,0)/r.length : pos(n); };
+  return bary(a)-bary(b); }; }
+for(let s=0; s<4; s++){
+  if(s%2===0) for(let l=1;l<L;l++) cols[l].sort(sortBy(n=>n.deps));
+  else        for(let l=L-2;l>=0;l--) cols[l].sort(sortBy(n=>n.succ));
+}
+
+const maxRows = Math.max(...cols.map(c=>c.length));
+const boardH = maxRows*(CH+YGAP)-YGAP+2*PAD, boardW = L*(CW+XGAP)-XGAP+2*PAD;
+cols.forEach((col,l) => { const off = PAD + (maxRows-col.length)*(CH+YGAP)/2;
+  col.forEach((n,i) => { n.x = PAD + l*(CW+XGAP); n.y = off + i*(CH+YGAP); }); });
+
+const canvas = document.getElementById('canvas'), svg = document.getElementById('edges');
+canvas.style.width = boardW+'px'; canvas.style.height = boardH+'px';
+svg.setAttribute('viewBox', `0 0 ${boardW} ${boardH}`);
+svg.setAttribute('width', boardW); svg.setAttribute('height', boardH);
+
+const edgeEls = [];
+nodes.forEach(n => n.deps.forEach(d => {
+  const a = byId[d], p = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const x1=a.x+CW, y1=a.y+CH/2, x2=n.x, y2=n.y+CH/2, dx=Math.min(XGAP*.9,(x2-x1)/2);
+  p.setAttribute('d', `M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`);
+  svg.appendChild(p); edgeEls.push({p, from:d, to:n.id});
+}));
+const markOf = id => {
+  const card = document.getElementById('task-' + id);
+  if(!card) return '';
+  const s = card.querySelector('.status').textContent.trim();
+  if(s === 'Done') return 'done';
+  if(s !== 'Not started') return 'active';
+  const dor = [...card.querySelectorAll('details.fold')]
+    .find(d => d.querySelector('summary').textContent.trim() === 'Definition of Ready');
+  return dor && dor.querySelector('ul.check li:not(.done)') ? '' : 'ready';
+};
+const MARK_TAG = {done:'✓', ready:'ready', active:'●'};
+const shownStatus = (id, status) => status.trim() !== 'Not started' ? status
+  : markOf(id) === 'ready' ? 'Ready' : 'Not ready';
+edgeEls.forEach(e => { if(markOf(e.from) === 'done') e.p.classList.add('met'); });
+nodes.forEach(n => {
+  const el = document.createElement('div');
+  n.mark = markOf(n.id);
+  el.className = 'chip' + (n.m==='X' ? ' gate' : '') + (n.mark ? ' is-' + n.mark : '');
+  if(n.m!=='X') el.style.setProperty('--m', `var(--gb-${hueOf[n.m]})`);
+  el.style.left = n.x+'px'; el.style.top = n.y+'px';
+  el.innerHTML = `<span class="cid">${n.id}</span> <span class="clabel">${n.label}</span>` +
+    (n.mark ? `<span class="cmark">${MARK_TAG[n.mark]}</span>` : '');
+  el.dataset.id = n.id; canvas.appendChild(el); n.el = el;
+});
+
+document.getElementById('legend').innerHTML =
+  Object.entries(MILESTONES).filter(([k])=>k!=='X').map(([k,v])=>`<span><i style="background:var(--gb-${hueOf[k]})"></i>${v.name}</span>`).join('') +
+  (TASKS.some(t=>t[2]==='X') ? `<span class="gate-key">gate</span>` : '') +
+  `<span class="mark-key done">done</span><span class="mark-key ready">ready</span><span class="mark-key active">in progress / review</span>`;
+
+const waveBody = document.getElementById('wave-body');
+cols.forEach((col, i) => {
+  const tr = document.createElement('tr');
+  const waveTd = document.createElement('td');
+  waveTd.textContent = 'Wave ' + (i + 1);
+  const tasksTd = document.createElement('td');
+  tasksTd.innerHTML = col.map(n => {
+    if(n.m === 'X') return `<span class="wave-chip gate"><span class="wave-id">${n.id}</span> ${n.label}</span>`;
+    const card = document.getElementById('task-' + n.id);
+    const status = card ? card.querySelector('.status').textContent : '';
+    const mark = markOf(n.id);
+    return `<a href="#task-${n.id}" class="wave-chip${mark ? ' is-' + mark : ''}"><span class="wave-id">${n.id}</span> <span class="wave-label">${n.label}</span> ` +
+      `<span class="status">${shownStatus(n.id, status)}</span></a>`;
+  }).join('');
+  tr.appendChild(waveTd); tr.appendChild(tasksTd);
+  waveBody.appendChild(tr);
+});
+
+const cardEls = {};
+document.querySelectorAll('.task[id^="task-"]').forEach(c => cardEls[c.id.slice(5)] = c);
+const ptsOf = id => parseInt(cardEls[id].querySelector('.pts').textContent, 10) || 0;
+const plural = (n, w) => `${n} ${w}${n===1?'':'s'}`;
+const sumPts = ids => ids.reduce((s,id)=>s+ptsOf(id),0);
+const tally = ids => `${plural(ids.length,'task')} · ${plural(sumPts(ids),'pt')}`;
+const CHIPS = ['Not started','In progress','In review','Done'];
+const stateOf = id => { const s = cardEls[id].querySelector('.status').textContent.trim();
+  return CHIPS.includes(s) ? s : 'In progress'; };
+const msList = document.querySelector('.milestones');
+if(msList){
+  const all = Object.keys(cardEls);
+  const ptsIn = state => sumPts(all.filter(id => stateOf(id) === state));
+  const buckets = [['Done','done'],['In review','review'],['In progress','progress'],['Not started','todo']]
+    .map(([state, cls]) => ({state, cls, pts: ptsIn(state)}))
+    .filter(b => b.state !== 'In progress' || b.pts);
+  const total = sumPts(all), pct = total ? Math.round(100 * buckets[0].pts / total) : 0;
+  msList.insertAdjacentHTML('beforebegin',
+    `<div class="exec"><div class="exec-bar" role="img" aria-label="${buckets.map(b => `${b.state} ${plural(b.pts,'pt')}`).join(', ')}">` +
+    buckets.filter(b => b.pts).map(b => `<span class="${b.cls}" style="flex:${b.pts}" title="${b.state}: ${plural(b.pts,'pt')}"></span>`).join('') +
+    `</div><div class="exec-legend">` +
+    buckets.map(b => `<span><i class="${b.cls}"></i>${b.state} <b>${b.pts}</b> pts</span>`).join('') +
+    `<span class="exec-total"><b>${pct}%</b> done · ${tally(all)}</span></div></div>`);
+  msList.querySelectorAll('li[data-ms]').forEach(li => {
+    const key = li.dataset.ms;
+    const ids = TASKS.filter(t => t[2] === key && cardEls[t[0]]).map(t => t[0]);
+    const states = ids.map(stateOf);
+    const state = ids.length && states.every(s => s === 'Done') ? 'Done'
+      : states.every(s => s === 'Not started') ? 'Not started' : 'In progress';
+    const strong = li.querySelector('strong');
+    const label = strong ? strong.innerHTML : key;
+    if(strong) strong.remove();
+    const goal = li.innerHTML.replace(/^\s*[—–-]\s*/, '');
+    const cut = label.indexOf(' — ');
+    const name = cut < 0 ? label : `<span class="ms-id">${label.slice(0, cut)}</span>${label.slice(cut + 3)}`;
+    const group = ids.length && cardEls[ids[0]].closest('.milestone-group');
+    const summary = group && group.querySelector('summary');
+    if(summary && !summary.id) summary.id = 'ms-' + key;
+    li.className = 'ms' + (key === 'X' ? ' gate' : '');
+    if(hueOf[key]) li.style.setProperty('--m', `var(--gb-${hueOf[key]})`);
+    li.innerHTML = `<div class="ms-line">` +
+      (summary ? `<a class="ms-name" href="#${summary.id}">${name}</a>` : `<span class="ms-name">${name}</span>`) +
+      `<span class="ms-count">${tally(ids)}</span>` +
+      `<span class="status ms-state is-${state === 'Done' ? 'done' : state === 'In progress' ? 'progress' : 'todo'}">${state}</span>` +
+      `</div><div class="ms-goal">${goal}</div>`;
+  });
+}
+const dorOf = c => [...c.querySelectorAll('details.fold')]
+  .find(d => d.querySelector('summary').textContent.trim() === 'Definition of Ready');
+const taskLinks = ids => ids.map(id => `<a href="#task-${id}">${id}</a>`).join('');
+document.querySelectorAll('.entry[id]').forEach(e => {
+  const sel = `a[href="#${e.id}"]`;
+  const users = Object.keys(cardEls).filter(id => cardEls[id].querySelector(sel));
+  let html = users.length ? 'Used by ' + taskLinks(users) : '';
+  if(e.classList.contains('open')){
+    const blocks = users.filter(id => { const d = dorOf(cardEls[id]); return d && d.querySelector(sel); });
+    const affects = users.filter(id => !blocks.includes(id));
+    html = [blocks.length ? 'Blocks ' + taskLinks(blocks) : '',
+            affects.length ? 'Affects ' + taskLinks(affects) : ''].filter(Boolean).join(' · ') || 'Project-wide';
+  }
+  if(html) e.insertAdjacentHTML('beforeend', `<p class="entry-links">${html}</p>`);
+});
+document.querySelectorAll('a[href^="#td-"],a[href^="#dec-"]').forEach(a => {
+  const t = document.getElementById(a.getAttribute('href').slice(1));
+  const title = t && t.querySelector('.entry-title');
+  if(title) a.title = title.textContent;
+});
+Object.values(cardEls).forEach(c => { const s = c.querySelector('.status');
+  s.textContent = shownStatus(c.id.slice(5), s.textContent); });
+
+function closure(id, dir){ const out=new Set(), st=[id]; while(st.length){ const c=byId[st.pop()];
+  (dir==='up'?c.deps:c.succ).forEach(x=>{ if(!out.has(x)){ out.add(x); st.push(x); } }); } return out; }
+let pinned = null;
+function trace(id){
+  const up = closure(id,'up'), down = closure(id,'down');
+  canvas.classList.add('tracing');
+  nodes.forEach(n => n.el.className = n.el.className.replace(/ (focus|up-n|down-n)/g,''));
+  byId[id].el.className += ' focus';
+  up.forEach(x=>byId[x].el.className += ' up-n');
+  down.forEach(x=>byId[x].el.className += ' down-n');
+  edgeEls.forEach(e => { e.p.classList.remove('up','down');
+    if((up.has(e.from)) && (up.has(e.to)||e.to===id)) e.p.classList.add('up');
+    if((down.has(e.to)) && (down.has(e.from)||e.from===id)) e.p.classList.add('down');
+  });
+  document.getElementById('trace-note').innerHTML =
+    `<b>${id}</b> needs ${up.size} task${up.size===1?'':'s'} merged first and unblocks ${down.size} downstream.`;
+}
+function clearTrace(){ canvas.classList.remove('tracing');
+  nodes.forEach(n => n.el.className = n.el.className.replace(/ (focus|up-n|down-n)/g,''));
+  edgeEls.forEach(e => e.p.classList.remove('up','down'));
+  document.getElementById('trace-note').textContent = '';
+}
+canvas.addEventListener('mouseover', e => { const c = e.target.closest('.chip'); if(c && !pinned) trace(c.dataset.id); });
+canvas.addEventListener('mouseout',  e => { if(!pinned && e.target.closest('.chip')) clearTrace(); });
+canvas.addEventListener('click', e => { const c = e.target.closest('.chip');
+  if(!c){ pinned=null; clearTrace(); return; }
+  if(pinned===c.dataset.id){ pinned=null; clearTrace(); } else { pinned=c.dataset.id; trace(pinned); } });
+</script>
+</body>
+</html>
